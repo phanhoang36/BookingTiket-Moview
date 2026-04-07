@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #131313;
+  --color-surface-dim: #131313;
+  --color-surface-bright: #3a3939;
+  --color-surface-container-lowest: #0e0e0e;
+  --color-surface-container-low: #1c1b1b;
+  --color-surface-container: #201f1f;
+  --color-surface-container-high: #2a2a2a;
+  --color-surface-container-highest: #353534;
+
+  --color-primary: #ffb4ab;
+  --color-primary-container: #ff5449;
+  --color-on-primary: #690005;
+  --color-on-primary-container: #5c0004;
+
+  --color-tertiary: #e9c400;
+  --color-tertiary-container: #c9a900;
+  --color-on-tertiary: #3a3000;
+  --color-on-tertiary-container: #4c3f00;
+
+  --color-on-surface: #e5e2e1;
+  --color-on-surface-variant: #e8bcb7;
+  --color-outline: #af8783;
+  --color-outline-variant: #5e3f3b;
+
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-body: "Manrope", sans-serif;
+  --font-label: "Manrope", sans-serif;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
