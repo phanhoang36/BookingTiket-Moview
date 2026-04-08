@@ -1,31 +1,39 @@
-import { ArrowRight, Clock, Film, Globe, Star } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { TMDB_IMAGE } from '../api/tmdb';
-import { useMovieCredits, useMovieDetail, useMovieVideos } from '../hooks/useTmdbMovies';
-import { getShowtimes, getHalls } from '../services/storage';
-import { setShowtime } from '../store/slices/bookingSlice';
-import { cn } from '../lib/utils';
-import { runtime, formatVND } from '../utils/formatters';
-import type { Showtime } from '../types';
-import dayjs from 'dayjs';
-import 'dayjs/locale/vi';
+import { ArrowRight, Clock, Film, Globe, Star } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { TMDB_IMAGE } from "../api/tmdb";
+import {
+  useMovieCredits,
+  useMovieDetail,
+  useMovieVideos,
+} from "../hooks/useTmdbMovies";
+import { getShowtimes, getHalls } from "../services/storage";
+import { setShowtime } from "../store/slices/bookingSlice";
+import { cn } from "../lib/utils";
+import { runtime, formatVND } from "../utils/formatters";
+import type { Showtime } from "../types";
+import dayjs from "dayjs";
+import "dayjs/locale/vi";
 
-dayjs.locale('vi');
+dayjs.locale("vi");
 
 export function MovieDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const movieId = id && !Number.isNaN(parseInt(id, 10)) ? parseInt(id, 10) : null;
+  const movieId =
+    id && !Number.isNaN(parseInt(id, 10)) ? parseInt(id, 10) : null;
 
   const { data: movie, isLoading } = useMovieDetail(movieId);
   const { data: videos } = useMovieVideos(movieId);
   const { data: credits } = useMovieCredits(movieId);
 
   // Showtimes for this movie from localStorage
-  const allShowtimes = useMemo(() => getShowtimes().filter((s) => s.movieId === movieId), [movieId]);
+  const allShowtimes = useMemo(
+    () => getShowtimes().filter((s) => s.movieId === movieId),
+    [movieId],
+  );
   const halls = useMemo(() => getHalls(), []);
 
   // Group showtimes by date
@@ -39,18 +47,20 @@ export function MovieDetails() {
   }, [allShowtimes]);
 
   const dates = Object.keys(dateGroups).sort();
-  const [selectedDate, setSelectedDate] = useState<string>(dates[0] ?? '');
+  const [selectedDate, setSelectedDate] = useState<string>(dates[0] ?? "");
 
-  const trailer = videos?.find((v) => v.type === 'Trailer' && v.site === 'YouTube');
-  const backdrop = TMDB_IMAGE(movie?.backdrop_path ?? null, 'original');
-  const poster = TMDB_IMAGE(movie?.poster_path ?? null, 'w500');
+  const trailer = videos?.find(
+    (v) => v.type === "Trailer" && v.site === "YouTube",
+  );
+  const backdrop = TMDB_IMAGE(movie?.backdrop_path ?? null, "original");
+  const poster = TMDB_IMAGE(movie?.poster_path ?? null, "w500");
 
   const handleSelectShowtime = (showtime: Showtime) => {
     dispatch(
       setShowtime({
         showtimeId: showtime.id,
         priceMap: showtime.prices,
-      })
+      }),
     );
     navigate(`/booking/${showtime.id}/seats`);
   };
@@ -60,7 +70,9 @@ export function MovieDetails() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-          <p className="text-on-surface-variant font-body">Đang tải thông tin phim...</p>
+          <p className="text-on-surface-variant font-body">
+            Đang tải thông tin phim...
+          </p>
         </div>
       </div>
     );
@@ -69,7 +81,9 @@ export function MovieDetails() {
   if (!movie) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-on-surface-variant font-body">Không tìm thấy phim.</p>
+        <p className="text-on-surface-variant font-body">
+          Không tìm thấy phim.
+        </p>
       </div>
     );
   }
@@ -89,12 +103,16 @@ export function MovieDetails() {
           <div className="max-w-3xl space-y-6">
             <div className="flex items-center gap-4">
               <span className="bg-primary text-on-primary px-3 py-1 font-bold tracking-widest text-xs uppercase rounded-sm">
-                {movie.status === 'Released' ? 'Đang chiếu' : 'Sắp chiếu'}
+                {movie.status === "Released" ? "Đang chiếu" : "Sắp chiếu"}
               </span>
               <div className="flex items-center gap-2">
                 <Star className="w-5 h-5 text-tertiary fill-current" />
-                <span className="font-headline font-bold text-xl">{movie.vote_average.toFixed(1)}</span>
-                <span className="text-on-surface-variant/70 text-sm font-medium">TMDB</span>
+                <span className="font-headline font-bold text-xl">
+                  {(movie.vote_average ?? 0).toFixed(1)}
+                </span>
+                <span className="text-on-surface-variant/70 text-sm font-medium">
+                  TMDB
+                </span>
               </div>
             </div>
 
@@ -109,7 +127,7 @@ export function MovieDetails() {
               </span>
               <span className="flex items-center gap-2">
                 <Film className="w-5 h-5 text-primary" />
-                {(movie.genres ?? []).map((g) => g.name).join(' / ') || 'N/A'}
+                {(movie.genres ?? []).map((g) => g.name).join(" / ") || "N/A"}
               </span>
               <span className="flex items-center gap-2">
                 <Globe className="w-5 h-5 text-primary" />
@@ -135,7 +153,9 @@ export function MovieDetails() {
             <div className="text-on-surface-variant text-sm py-8 text-center">
               Hiện chưa có suất chiếu nào cho phim này.
               <br />
-              <span className="text-xs opacity-60">Vui lòng quay lại sau hoặc liên hệ admin.</span>
+              <span className="text-xs opacity-60">
+                Vui lòng quay lại sau hoặc liên hệ admin.
+              </span>
             </div>
           ) : (
             <>
@@ -146,18 +166,20 @@ export function MovieDetails() {
                     key={date}
                     onClick={() => setSelectedDate(date)}
                     className={cn(
-                      'flex flex-col items-center justify-center min-w-[80px] h-20 rounded-lg transition-all px-4',
+                      "flex flex-col items-center justify-center min-w-[80px] h-20 rounded-lg transition-all px-4",
                       selectedDate === date
-                        ? 'bg-primary text-on-primary shadow-[0_0_20px_rgba(255,180,171,0.3)]'
-                        : 'bg-surface-container-high text-on-surface hover:bg-surface-bright'
+                        ? "bg-primary text-on-primary shadow-[0_0_20px_rgba(255,180,171,0.3)]"
+                        : "bg-surface-container-high text-on-surface hover:bg-surface-bright",
                     )}
                   >
                     <span className="text-xs font-bold uppercase tracking-tight opacity-80 capitalize">
-                      {dayjs(date).format('ddd')}
+                      {dayjs(date).format("ddd")}
                     </span>
-                    <span className="text-2xl font-headline font-bold">{dayjs(date).format('DD')}</span>
+                    <span className="text-2xl font-headline font-bold">
+                      {dayjs(date).format("DD")}
+                    </span>
                     <span className="text-xs font-bold uppercase tracking-tight opacity-80">
-                      {dayjs(date).format('MMM')}
+                      {dayjs(date).format("MMM")}
                     </span>
                   </button>
                 ))}
@@ -182,11 +204,15 @@ export function MovieDetails() {
                       <div className="mt-3 pt-3 border-t border-outline-variant/10 text-xs text-on-surface-variant space-y-0.5">
                         <div className="flex justify-between">
                           <span>Thường</span>
-                          <span className="font-bold text-on-surface">{formatVND(showtime.prices.standard)}</span>
+                          <span className="font-bold text-on-surface">
+                            {formatVND(showtime.prices.standard)}
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span>VIP</span>
-                          <span className="font-bold text-on-surface">{formatVND(showtime.prices.vip)}</span>
+                          <span className="font-bold text-on-surface">
+                            {formatVND(showtime.prices.vip)}
+                          </span>
                         </div>
                       </div>
                       <div className="mt-3 flex items-center justify-end gap-1 text-xs text-primary font-bold opacity-0 group-hover:opacity-100 transition-opacity">
@@ -206,7 +232,9 @@ export function MovieDetails() {
         {/* Trailer */}
         {trailer && (
           <div className="bg-surface-container-low p-6 rounded-xl">
-            <h4 className="text-tertiary text-xs uppercase tracking-widest font-bold mb-4">Trailer</h4>
+            <h4 className="text-tertiary text-xs uppercase tracking-widest font-bold mb-4">
+              Trailer
+            </h4>
             <div className="aspect-video rounded-lg overflow-hidden">
               <iframe
                 src={`https://www.youtube.com/embed/${trailer.key}`}
@@ -221,24 +249,36 @@ export function MovieDetails() {
 
         {/* Cast */}
         <div className="bg-surface-container-low p-6 rounded-xl">
-          <h4 className="text-tertiary text-xs uppercase tracking-widest font-bold mb-4">Diễn Viên</h4>
+          <h4 className="text-tertiary text-xs uppercase tracking-widest font-bold mb-4">
+            Diễn Viên
+          </h4>
           <div className="grid grid-cols-2 gap-3">
             {credits?.slice(0, 8).map((member) => {
-              const avatar = TMDB_IMAGE(member.profile_path, 'w300');
+              const avatar = TMDB_IMAGE(member.profile_path, "w300");
               return (
                 <div key={member.id} className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-surface-container-highest">
                     {avatar ? (
-                      <img src={avatar} alt={member.name} className="w-full h-full object-cover" />
+                      <img
+                        src={avatar}
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-on-surface/30 text-xs">
-                        {member.name[0]}
+                        {member.name
+                          ? member.name.charAt(0).toUpperCase()
+                          : "?"}
                       </div>
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-on-surface truncate">{member.name}</p>
-                    <p className="text-xs text-on-surface-variant truncate">{member.character}</p>
+                    <p className="text-sm font-bold text-on-surface truncate">
+                      {member.name}
+                    </p>
+                    <p className="text-xs text-on-surface-variant truncate">
+                      {member.character}
+                    </p>
                   </div>
                 </div>
               );

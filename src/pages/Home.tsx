@@ -1,13 +1,20 @@
-import { ArrowLeft, ArrowRight, PlayCircle, Star } from 'lucide-react';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { TMDB_IMAGE } from '../api/tmdb';
-import { useNowPlaying, usePopular, useUpcoming } from '../hooks/useTmdbMovies';
-import { getFeaturedMovie } from '../services/storage';
-import type { TmdbMovie } from '../types';
+import { ArrowLeft, ArrowRight, PlayCircle, Star } from "lucide-react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { TMDB_IMAGE } from "../api/tmdb";
+import { useNowPlaying, usePopular, useUpcoming } from "../hooks/useTmdbMovies";
+import { getFeaturedMovie } from "../services/storage";
+import type { TmdbMovie } from "../types";
 
-function MovieCard({ movie, onClick }: { movie: TmdbMovie; onClick: () => void; key?: React.Key | null }) {
-  const poster = TMDB_IMAGE(movie.poster_path, 'w500');
+function MovieCard({
+  movie,
+  onClick,
+}: {
+  movie: TmdbMovie;
+  onClick: () => void;
+  key?: React.Key | null;
+}) {
+  const poster = TMDB_IMAGE(movie.poster_path, "w500");
   return (
     <div
       onClick={onClick}
@@ -30,10 +37,12 @@ function MovieCard({ movie, onClick }: { movie: TmdbMovie; onClick: () => void; 
         </div>
       </div>
       <div className="mt-3 px-1">
-        <h3 className="font-headline font-bold text-base text-on-surface truncate">{movie.title}</h3>
+        <h3 className="font-headline font-bold text-base text-on-surface truncate">
+          {movie.title}
+        </h3>
         <p className="text-xs text-on-surface-variant flex items-center gap-1 mt-0.5">
           <Star className="w-3 h-3 fill-tertiary text-tertiary" />
-          {movie.vote_average.toFixed(1)}
+          {(movie.vote_average ?? 0).toFixed(1)}
         </p>
       </div>
     </div>
@@ -59,7 +68,7 @@ export function Home() {
   const { data: upcoming, isLoading: loadingUp } = useUpcoming();
 
   const heroMovie = getFeaturedMovie() ?? nowPlaying?.results[0];
-  const backdrop = TMDB_IMAGE(heroMovie?.backdrop_path ?? null, 'original');
+  const backdrop = TMDB_IMAGE(heroMovie?.backdrop_path ?? null, "original");
 
   return (
     <div className="flex flex-col">
@@ -70,7 +79,9 @@ export function Home() {
         ) : (
           <div
             className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat transition-transform duration-1000 group-hover:scale-105"
-            style={{ backgroundImage: backdrop ? `url('${backdrop}')` : undefined }}
+            style={{
+              backgroundImage: backdrop ? `url('${backdrop}')` : undefined,
+            }}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent" />
@@ -85,7 +96,7 @@ export function Home() {
                     Đang chiếu
                   </span>
                   <span className="px-3 py-1 bg-surface-container-low/80 backdrop-blur-sm border border-outline-variant/30 text-on-surface text-xs font-bold font-body uppercase tracking-widest rounded-sm">
-                    {(heroMovie.original_language ?? '').toUpperCase()}
+                    {(heroMovie.original_language || "EN").toUpperCase()}
                   </span>
                 </div>
 
@@ -149,9 +160,17 @@ export function Home() {
           </div>
           <div className="flex gap-5 overflow-x-auto no-scrollbar pb-4 snap-x">
             {loadingPop
-              ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+              ? Array.from({ length: 8 }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))
               : popular?.results.map((m) => (
-                  <MovieCard key={m.id} movie={m} onClick={() => { navigate(`/movie/${m.id}`) }} />
+                  <MovieCard
+                    key={m.id}
+                    movie={m}
+                    onClick={() => {
+                      navigate(`/movie/${m.id}`);
+                    }}
+                  />
                 ))}
           </div>
         </section>
@@ -163,18 +182,25 @@ export function Home() {
           </h2>
           <div className="flex gap-5 overflow-x-auto no-scrollbar pb-4 snap-x opacity-70 hover:opacity-100 transition-opacity">
             {loadingUp
-              ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+              ? Array.from({ length: 6 }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))
               : upcoming?.results.map((m) => (
                   <div key={m.id}>
-                    <MovieCard movie={m} onClick={() => { navigate(`/movie/${m.id}`) }} />
+                    <MovieCard
+                      movie={m}
+                      onClick={() => {
+                        navigate(`/movie/${m.id}`);
+                      }}
+                    />
                     <p className="mt-1 px-1 text-xs text-primary font-bold">
                       {m.release_date
-                        ? new Date(m.release_date).toLocaleDateString('vi-VN', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
+                        ? new Date(m.release_date).toLocaleDateString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
                           })
-                        : 'Sắp ra mắt'}
+                        : "Sắp ra mắt"}
                     </p>
                   </div>
                 ))}
@@ -188,9 +214,17 @@ export function Home() {
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5">
             {loadingNow
-              ? Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={i} />)
+              ? Array.from({ length: 12 }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))
               : nowPlaying?.results.map((m) => (
-                  <MovieCard key={m.id} movie={m} onClick={() => { navigate(`/movie/${m.id}`) }} />
+                  <MovieCard
+                    key={m.id}
+                    movie={m}
+                    onClick={() => {
+                      navigate(`/movie/${m.id}`);
+                    }}
+                  />
                 ))}
           </div>
         </section>
